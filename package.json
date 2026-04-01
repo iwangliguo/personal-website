@@ -4,11 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npm run generate:diaries && vite",
-    "build": "npm run generate:diaries && tsc -b && vite build",
+    "dev": "npm run generate && vite",
+    "build": "npm run generate && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate:diaries": "node scripts/generate-diaries.cjs"
+    "generate": "npm run generate:diaries && npm run generate:techniques",
+    "generate:diaries": "node scripts/generate-diaries.cjs",
+    "generate:techniques": "node scripts/generate-techniques.cjs"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",

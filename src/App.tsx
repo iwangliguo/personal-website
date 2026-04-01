@@ -7,6 +7,8 @@ import DiaryDetail from './pages/DiaryDetail';
 import Publications from './pages/Publications';
 import Projects from './pages/Projects';
 import Contact from './pages/Contact';
+import Techniques from './pages/Techniques';
+import TechniqueDetail from './pages/TechniqueDetail';
 import './styles/Academic.css';
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
             <Route path="/" element={<About />} />
             <Route path="/diaries" element={<Diaries />} />
             <Route path="/diaries/:id" element={<DiaryDetail />} />
+            <Route path="/techniques" element={<Techniques />} />
+            <Route path="/techniques/:id" element={<TechniqueDetail />} />
             <Route path="/publications" element={<Publications />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/contact" element={<Contact />} />

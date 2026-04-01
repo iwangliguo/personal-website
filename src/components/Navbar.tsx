@@ -22,7 +22,15 @@ const Navbar = () => {
               to="/diaries" 
               className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
             >
-              日记
+              日札
+            </NavLink>
+          </li>
+          <li>
+            <NavLink 
+              to="/techniques" 
+              className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
+            >
+              术略
             </NavLink>
           </li>
           <li>
@@ -30,7 +38,7 @@ const Navbar = () => {
               to="/publications" 
               className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
             >
-              发表论文
+              论稿
             </NavLink>
           </li>
           <li>
@@ -38,7 +46,7 @@ const Navbar = () => {
               to="/projects" 
               className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
             >
-              研究项目
+              践迹
             </NavLink>
           </li>
           <li>
@@ -46,7 +54,7 @@ const Navbar = () => {
               to="/contact" 
               className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
             >
-              联系方式
+              寄言
             </NavLink>
           </li>
         </ul>
