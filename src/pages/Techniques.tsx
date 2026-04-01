@@ -16,7 +16,7 @@ const Techniques = () => {
   return (
     <div className="container fade-in">
       <header className="page-header">
-        <h1 className="page-title">术略</h1>
+        <h1 className="page-title">技术总结</h1>
         <p className="page-subtitle">Techniques</p>
       </header>
 

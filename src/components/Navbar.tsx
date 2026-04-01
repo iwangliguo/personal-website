@@ -14,7 +14,7 @@ const Navbar = () => {
               to="/" 
               className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
             >
-              关于我
+              自叙
             </NavLink>
           </li>
           <li>

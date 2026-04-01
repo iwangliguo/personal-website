@@ -14,7 +14,7 @@ const TechniqueDetail = () => {
     return (
       <div className="container fade-in">
         <div className="empty-state">
-          <p className="empty-text">未找到该术略</p>
+          <p className="empty-text">未找到该技术总结</p>
           <Link to="/techniques" className="back-link">← 返回术略列表</Link>
         </div>
       </div>
@@ -47,7 +47,7 @@ const TechniqueDetail = () => {
           <div className="entry-nav-item entry-nav-prev">
             {prevTechnique ? (
               <Link to={`/techniques/${prevTechnique.id}`} className="entry-nav-btn">
-                <span className="entry-nav-label">← 术略</span>
+                <span className="entry-nav-label">← 技术总结</span>
                 <span className="entry-nav-title">{prevTechnique.title}</span>
               </Link>
             ) : (
@@ -63,7 +63,7 @@ const TechniqueDetail = () => {
           <div className="entry-nav-item entry-nav-next">
             {nextTechnique ? (
               <Link to={`/techniques/${nextTechnique.id}`} className="entry-nav-btn entry-nav-btn--right">
-                <span className="entry-nav-label">术略 →</span>
+                <span className="entry-nav-label">技术总结 →</span>
                 <span className="entry-nav-title">{nextTechnique.title}</span>
               </Link>
             ) : (
@@ -76,7 +76,7 @@ const TechniqueDetail = () => {
         </div>
 
         <div className="back-to-list">
-          <Link to="/techniques" className="back-link">← 返回术略列表</Link>
+          <Link to="/techniques" className="back-link">← 返回技术总结列表</Link>
         </div>
       </main>
     </div>

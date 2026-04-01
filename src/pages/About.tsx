@@ -9,7 +9,7 @@ const About = () => {
     <div className="container fade-in">
       <header className="page-header">
         <h1 className="page-title">{profileData.name}</h1>
-        <p className="page-subtitle">{profileData.title} | {profileData.institution}</p>
+        <p className="page-subtitle">{profileData.title} | <a href={`https://maps.baidu.com/search/${encodeURIComponent(profileData.institutionAddress)}`} target="_blank" rel="noopener noreferrer">{profileData.institution}</a></p>
       </header>
 
       <main>

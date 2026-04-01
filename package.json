@@ -8,9 +8,10 @@
     "build": "npm run generate && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate": "npm run generate:diaries && npm run generate:techniques",
+    "generate": "npm run generate:diaries && npm run generate:techniques && npm run generate:projects",
     "generate:diaries": "node scripts/generate-diaries.cjs",
-    "generate:techniques": "node scripts/generate-techniques.cjs"
+    "generate:techniques": "node scripts/generate-techniques.cjs",
+    "generate:projects": "node scripts/generate-projects.cjs"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
