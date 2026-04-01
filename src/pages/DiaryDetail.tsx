@@ -6,6 +6,11 @@ import rehypeRaw from 'rehype-raw';
 import { getDiaryById, getPublicDiaries } from '../data/diaries';
 import '../styles/Academic.css';
 
+// 格式化日期：只显示到日期（YYYY-MM-DD）
+const formatDate = (dateStr: string) => {
+  return dateStr.split('T')[0];
+};
+
 const VIDEO_EXTS = ['.mp4', '.webm', '.ogg', '.mov'];
 const AUDIO_EXTS = ['.mp3', '.ogg', '.wav', '.m4a', '.aac', '.flac'];
 
@@ -110,7 +115,7 @@ const DiaryDetail = () => {
         <article className="diary-article">
           <header className="diary-header">
             <h1 className="diary-detail-title">{diary.title}</h1>
-            <p className="diary-detail-date">{diary.date}</p>
+            <p className="diary-detail-date">{formatDate(diary.date)}</p>
             {diary.tags && diary.tags.length > 0 && (
               <div className="diary-tags">
                 {diary.tags.map((tag: string, index: number) => (
@@ -189,7 +194,7 @@ const DiaryDetail = () => {
               <Link to={`/diaries/${prevDiary.id}`} className="entry-nav-link">
                 <span className="entry-nav-label">← 上一篇</span>
                 <span className="entry-nav-title">{prevDiary.title}</span>
-                <span className="entry-nav-date">{prevDiary.date}</span>
+                <span className="entry-nav-date">{formatDate(prevDiary.date)}</span>
               </Link>
             ) : (
               <span className="entry-nav-disabled">已是第一篇</span>
@@ -201,7 +206,7 @@ const DiaryDetail = () => {
               <Link to={`/diaries/${nextDiary.id}`} className="entry-nav-link entry-nav-link--right">
                 <span className="entry-nav-label">下一篇 →</span>
                 <span className="entry-nav-title">{nextDiary.title}</span>
-                <span className="entry-nav-date">{nextDiary.date}</span>
+                <span className="entry-nav-date">{formatDate(nextDiary.date)}</span>
               </Link>
             ) : (
               <span className="entry-nav-disabled entry-nav-disabled--right">已是最后一篇</span>

@@ -5,6 +5,11 @@ import { usePagination } from '../hooks/usePagination';
 import { useSearch } from '../hooks/useSearch';
 import '../styles/Academic.css';
 
+// 格式化日期：只显示到日期（YYYY-MM-DD）
+const formatDate = (dateStr: string) => {
+  return dateStr.split('T')[0];
+};
+
 const Diaries = () => {
   const publicDiaries = getPublicDiaries();
   const { query, setQuery, filtered } = useSearch(publicDiaries, ['title', 'content', 'tags']);
@@ -53,7 +58,7 @@ const Diaries = () => {
                   )}
                   <div className="diary-content">
                     <h3 className="diary-title">{diary.title}</h3>
-                    <p className="diary-date">{diary.date}</p>
+                    <p className="diary-date">{formatDate(diary.date)}</p>
                     <p className="diary-excerpt">
                       {diary.content.replace(/[#*_`>\[\]()]/g, '').substring(0, 120)}...
                     </p>

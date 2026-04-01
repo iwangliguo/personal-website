@@ -48,7 +48,14 @@ const Contact = () => {
                 d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" 
               />
             </svg>
-            <span>{profileData.institution}</span>
+            <a 
+              href={`https://maps.baidu.com/search/${encodeURIComponent(profileData.institutionAddress)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="contact-link"
+            >
+              苏州供电公司
+            </a>
           </div>
         </div>
 

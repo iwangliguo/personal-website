@@ -47,7 +47,7 @@ export const profileData: ProfileData = {
   name: 'hins wang',
   title: '基层牛马',
   institution: '苏州 苏州供电公司',
-  institutionAddress: '江苏省苏州市姑苏区三香路718号',
+  institutionAddress: '苏州市姑苏区三香路458号',
   email: '3108741604@qq.com',
   bio: '我是一名电力系统从业者。我的研究兴趣包括电力系统、电机控制，计算机系统。',
   workExperience: [
