@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { getProjectById, getPublicProjects } from '../data/projects';
 import '../styles/Academic.css';
 
@@ -38,9 +39,7 @@ const ProjectDetail = () => {
         )}
 
         <article className="diary-detail-content">
-          {project.content.split('\n').map((line, index) => (
-            <p key={index}>{line}</p>
-          ))}
+          <ReactMarkdown>{project.content}</ReactMarkdown>
         </article>
 
         <div className="entry-nav">
