@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { getTechniqueById, getPublicTechniques } from '../data/techniques';
 import '../styles/Academic.css';
 
@@ -38,9 +39,7 @@ const TechniqueDetail = () => {
         )}
 
         <article className="diary-detail-content">
-          {technique.content.split('\n').map((line, index) => (
-            <p key={index}>{line}</p>
-          ))}
+          <ReactMarkdown>{technique.content}</ReactMarkdown>
         </article>
 
         <div className="entry-nav">
