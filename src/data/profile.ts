@@ -45,8 +45,8 @@ export interface ProfileData {
 
 export const profileData: ProfileData = {
   name: 'hins wang',
-  title: '基层牛马',
-  institution: '苏州 苏州供电公司',
+  title: '自娱自乐透明人',
+  institution: '苏州供电公司',
   institutionAddress: '苏州市姑苏区三香路458号',
   email: '3108741604@qq.com',
   bio: '我是一名电力系统从业者。我的研究兴趣包括电力系统、电机控制，计算机系统。',
@@ -66,7 +66,7 @@ export const profileData: ProfileData = {
       year: '2020 - 2023'
     },
     {
-      degree: '学士',
+      degree: '本科',
       field: '电气工程及其自动化',
       institution: '上海交通大学',
       year: '2016 - 2020'
@@ -86,7 +86,7 @@ export const profileData: ProfileData = {
   ],
   skills: [
     'Python',
-    'C++/C',
+    'C/C++',
     'MATLAB/Simulink',
     'ARM/GNU',
     'MarkDown',
