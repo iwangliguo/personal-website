@@ -21,12 +21,12 @@ const About = () => {
               onMouseLeave={() => setIsHovered(false)}
             >
               <img 
-                src="/src/pages/photo1.jpg"
+                src="/photo1.jpg"
                 alt={`${profileData.name} 的照片 1`}
                 className={`profile-image ${isHovered ? 'image-hide' : 'image-show'}`}
               />
               <img 
-                src="/src/pages/photo2.jpg"
+                src="/photo2.jpg"
                 alt={`${profileData.name} 的照片 2`}
                 className={`profile-image image-overlay ${isHovered ? 'image-show' : 'image-hide'}`}
               />
