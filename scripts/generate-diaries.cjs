@@ -94,9 +94,13 @@ function readDiaryFiles() {
       const content = fs.readFileSync(mdFilePath, 'utf8');
       const parsed = matter(content);
 
-      // 处理相对路径：将 ./xxx 转换为 /diary/folderName/xxx
+      // 处理相对路径：将 ./xxx 转换为 /diary/folderName/xxx，或保持 COS URL 不变
       const resolveRelativePath = (filePath) => {
         if (!filePath) return undefined;
+        // 如果已经是 COS URL 或其他 http/https URL，保持不变
+        if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
+          return filePath;
+        }
         if (filePath.startsWith('/')) return filePath;
         if (filePath.startsWith('./')) {
           return `/diary/${folder}/${filePath.slice(2)}`;
@@ -112,7 +116,9 @@ function readDiaryFiles() {
       // 将正文中的相对路径转换为绝对路径（同时处理 Markdown 语法和 HTML 标签）
       const resolveContentPaths = (md) => {
         const toAbs = (src) => {
-          if (!src || src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')) {
+          if (!src) return src;
+          // 如果已经是 COS URL 或其他 http/https URL，保持不变
+          if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')) {
             return src;
           }
           return src.startsWith('./') ? `/diary/${folder}/${src.slice(2)}` : `/diary/${folder}/${src}`;
