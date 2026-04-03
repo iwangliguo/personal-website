@@ -390,10 +390,113 @@ async function uploadFrontmatterMedia(mdPath, fileType) {
   return results;
 }
 
+// ============ Frontmatter 检查模式 ============
+
+async function checkAndUploadFrontmatterMedia(mdPath) {
+  if (!fs.existsSync(mdPath)) {
+    console.error(`文件不存在: ${mdPath}`);
+    return;
+  }
+  
+  const mediaFiles = parseFrontmatterMedia(mdPath);
+  
+  if (mediaFiles.length === 0) {
+    console.log('无本地媒体文件');
+    return;
+  }
+  
+  console.log(`\n=== ${pathModule.basename(mdPath)} ===`);
+  console.log(`发现 ${mediaFiles.length} 个本地媒体文件:`);
+  mediaFiles.forEach((m, i) => console.log(`  ${i + 1}. [${m.field}] ${m.value}`));
+  
+  const fileType = getTypeFromMarkdown(mdPath);
+  await uploadFrontmatterMedia(mdPath, fileType);
+}
+
+async function checkAllMarkdown() {
+  const publicDir = pathModule.join(__dirname, '..', 'public');
+  const mdFiles = [];
+  
+  function findMdFiles(dir) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = pathModule.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        findMdFiles(fullPath);
+      } else if (entry.name.endsWith('.md')) {
+        mdFiles.push(fullPath);
+      }
+    }
+  }
+  
+  findMdFiles(publicDir);
+  console.log(`找到 ${mdFiles.length} 个 markdown 文件\n`);
+  
+  let totalUpdated = 0;
+  for (const mdFile of mdFiles) {
+    const mediaFiles = parseFrontmatterMedia(mdFile);
+    if (mediaFiles.length > 0) {
+      const fileType = getTypeFromMarkdown(mdFile);
+      const results = await uploadFrontmatterMedia(mdFile, fileType);
+      totalUpdated += results.length;
+    }
+  }
+  
+  console.log(`\n=== 总计 ===`);
+  console.log(`更新了 ${totalUpdated} 个媒体链接`);
+}
+
 // ============ 主程序 ============
 
+const args = process.argv.slice(2);
+
+// 帮助信息
+if (args.includes('--help') || args.includes('-h')) {
+  console.log(`
+cos-upload - 上传图片到 COS
+
+用法:
+  node cos-upload.cjs [options] [image-file]
+  
+选项:
+  --check <md-file>   检测并上传指定 markdown 的 frontmatter 本地媒体
+  --check-all         检测并上传所有 markdown 的 frontmatter 本地媒体
+  --help, -h          显示帮助信息
+
+示例:
+  # Typora 触发（自动检测当前文件）
+  node cos-upload.cjs
+  
+  # 检测并上传单个文件
+  node cos-upload.cjs --check public/diary/xxx.md
+  
+  # 检测并上传所有文件
+  node cos-upload.cjs --check-all
+`);
+  process.exit(0);
+}
+
+// 检查模式
+if (args.includes('--check-all')) {
+  checkAllMarkdown().then(() => process.exit(0));
+  return;
+}
+
+if (args.includes('--check')) {
+  const idx = args.indexOf('--check');
+  const mdFile = args[idx + 1];
+  if (!mdFile) {
+    console.error('请指定 markdown 文件');
+    process.exit(1);
+  }
+  const mdPath = pathModule.resolve(mdFile);
+  checkAndUploadFrontmatterMedia(mdPath).then(() => process.exit(0));
+  return;
+}
+
+// 正常上传模式
 async function getInputFiles() {
-  let inputs = process.argv.slice(2).filter(arg => !arg.startsWith('-'));
+  let inputs = args.filter(arg => !arg.startsWith('-'));
   
   // 如果没有命令行参数，从 Typora TMPDIR 获取
   if (inputs.length === 0) {
