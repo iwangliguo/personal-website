@@ -1,0 +1,87 @@
+[
+  {
+    "local": "public/diary/2023-08-03-first-day/covers/photo1.jpg",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2023-08-03-first-day-photo1.jpg",
+    "type": "cover"
+  },
+  {
+    "local": "public/diary/2023-08-03-first-day/images/photo1.jpg",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2023-08-03-first-day-photo1.jpg",
+    "type": "image"
+  },
+  {
+    "local": "public/diary/2023-08-03-first-day/images/photo2.jpg",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2023-08-03-first-day-photo2.jpg",
+    "type": "image"
+  },
+  {
+    "local": "public/diary/2026-03-27-开关高级工考试/covers/photo1.jpg",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2026-03-27-开关高级工考试-photo1.jpg",
+    "type": "cover"
+  },
+  {
+    "local": "public/diary/2026-03-27-开关高级工考试/images/photo1.jpg",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2026-03-27-开关高级工考试-photo1.jpg",
+    "type": "image"
+  },
+  {
+    "local": "public/diary/2026-03-27-开关高级工考试/images/photo2.jpg",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2026-03-27-开关高级工考试-photo2.jpg",
+    "type": "image"
+  },
+  {
+    "local": "public/diary/2026-03-28-铁琴变加班/covers/photo1.jpg",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2026-03-28-铁琴变加班-photo1.jpg",
+    "type": "cover"
+  },
+  {
+    "local": "public/diary/2026-03-28-铁琴变加班/images/photo1.jpg",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2026-03-28-铁琴变加班-photo1.jpg",
+    "type": "image"
+  },
+  {
+    "local": "public/diary/2026-03-28-铁琴变加班/images/photo2.jpg",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2026-03-28-铁琴变加班-photo2.jpg",
+    "type": "image"
+  },
+  {
+    "local": "public/diary/2026-03-30-谢桥变拿票/covers/photo1.jpg",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2026-03-30-谢桥变拿票-photo1.jpg",
+    "type": "cover"
+  },
+  {
+    "local": "public/diary/2026-03-30-谢桥变拿票/images/photo1.jpg",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2026-03-30-谢桥变拿票-photo1.jpg",
+    "type": "image"
+  },
+  {
+    "local": "public/diary/2026-03-30-谢桥变拿票/images/photo2.jpg",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2026-03-30-谢桥变拿票-photo2.jpg",
+    "type": "image"
+  },
+  {
+    "local": "public/diary/2026-03-30-谢桥变拿票/images/photo3.jpg",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2026-03-30-谢桥变拿票-photo3.jpg",
+    "type": "image"
+  },
+  {
+    "local": "public/diary/2026-03-30-谢桥变拿票/images/photo4.jpg",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2026-03-30-谢桥变拿票-photo4.jpg",
+    "type": "image"
+  },
+  {
+    "local": "public/diary/2026-03-30-谢桥变拿票/images/photo5.png",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2026-03-30-谢桥变拿票-photo5.png",
+    "type": "image"
+  },
+  {
+    "local": "public/diary/2026-03-30-谢桥变拿票/images/photo6.png",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2026-03-30-谢桥变拿票-photo6.png",
+    "type": "image"
+  },
+  {
+    "local": "public/diary/2026-04-01-周泾变掏鸟窝/covers/photo1.jpg",
+    "cos": "https://hins-1417576783.cos.ap-shanghai.myqcloud.com/diary/2026-04-01-周泾变掏鸟窝-photo1.jpg",
+    "type": "cover"
+  }
+]
