@@ -11,7 +11,10 @@
     "generate": "npm run generate:diaries && npm run generate:techniques && npm run generate:projects",
     "generate:diaries": "node scripts/generate-diaries.cjs",
     "generate:techniques": "node scripts/generate-techniques.cjs",
-    "generate:projects": "node scripts/generate-projects.cjs"
+    "generate:projects": "node scripts/generate-projects.cjs",
+    "cos:upload-fm": "node scripts/cos-frontmatter-upload.cjs",
+    "cos:upload-fm:all": "node scripts/cos-frontmatter-upload.cjs --all",
+    "cos:upload-fm:dry": "node scripts/cos-frontmatter-upload.cjs --all --dry-run"
   },
   "dependencies": {
     "cos-nodejs-sdk-v5": "^2.15.4",

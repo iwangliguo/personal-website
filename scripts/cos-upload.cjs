@@ -1,11 +1,23 @@
 #!/usr/bin/env node
+/**
+ * cos-upload - 上传图片到 COS 并自动替换 markdown 中的引用
+ * 
+ * 支持:
+ * - Typora 正文图片上传
+ * - frontmatter 中的 coverImage, covers, images, videos, audios
+ * 
+ * Typora 配置:
+ * 偏好设置 → 图像 → 上传本地图片 → Custom Command
+ * 命令: /path/to/project/scripts/cos-upload.cjs
+ */
+
 const COS = require('cos-nodejs-sdk-v5');
 const pathModule = require('path');
 const fs = require('fs');
 const https = require('https');
 const http = require('http');
 
-// 自动读取 .env 文件
+// ============ 环境变量加载 ============
 const envPath = pathModule.join(__dirname, '..', '.env');
 let envVars = {};
 if (fs.existsSync(envPath)) {
@@ -23,7 +35,6 @@ if (fs.existsSync(envPath)) {
   });
 }
 
-// 从环境变量或 .env 文件读取 COS 密钥
 const secretId = process.env.COS_SECRET_ID || envVars.COS_SECRET_ID;
 const secretKey = process.env.COS_SECRET_KEY || envVars.COS_SECRET_KEY;
 
@@ -35,11 +46,19 @@ if (!secretId || !secretKey) {
 const cos = new COS({ SecretId: secretId, SecretKey: secretKey });
 const bucket = 'hins-1417576783';
 const region = 'ap-shanghai';
+const cosBaseUrl = `https://${bucket}.cos.${region}.myqcloud.com`;
 const tempDir = '/tmp/picgo-upload';
 
 if (!fs.existsSync(tempDir)) {
   fs.mkdirSync(tempDir, { recursive: true });
 }
+
+// ============ 工具函数 ============
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// ============ Typora 交互 ============
 
 // 从 Typora 的 TMPDIR 获取最新图片
 function getTyporaImage() {
@@ -63,7 +82,6 @@ function getTyporaImage() {
 // 通过 lsof 获取 Typora 当前打开的 markdown 文件
 function getTyporaMarkdownPath() {
   const { execSync } = require('child_process');
-  fs.appendFileSync('/tmp/picgo-debug.log', `getTyporaMarkdownPath 开始\n`);
   try {
     // 获取 Typora 进程 PID
     let pid = null;
@@ -79,88 +97,156 @@ function getTyporaMarkdownPath() {
       } catch (e) {}
     }
     
-    fs.appendFileSync('/tmp/picgo-debug.log', `PID: ${pid}\n`);
     if (!pid) return null;
     
-    // 方法1: 尝试获取工作目录
-    try {
-      const pwdx = execSync(`pwdx ${pid} 2>/dev/null`, { encoding: 'utf-8', timeout: 3000 }).trim();
-      fs.appendFileSync('/tmp/picgo-debug.log', `pwdx: ${pwdx}\n`);
-    } catch (e) {
-      fs.appendFileSync('/tmp/picgo-debug.log', `pwdx 失败\n`);
-    }
-    
-    // 方法2: 获取该进程打开的所有文件
+    // 获取该进程打开的所有文件
     const lsof = execSync(`lsof -p ${pid} 2>/dev/null`, { encoding: 'utf-8', timeout: 5000 });
     
-    // 尝试查找任何在 personal-website 目录下的文件
+    // 查找 personal-website 目录下的 md 文件
     const lines = lsof.split('\n');
     for (const line of lines) {
       if (line.includes('personal-website') && (line.includes('.md') || line.includes('.markdown'))) {
         const parts = line.split(/\s+/);
         const filePath = parts[parts.length - 1];
-        fs.appendFileSync('/tmp/picgo-debug.log', `找到 md 文件: ${filePath}\n`);
         if (filePath && fs.existsSync(filePath)) {
           return filePath;
         }
       }
     }
     
-    // 如果没找到，尝试用 cwd
-    try {
-      const cwd = execSync(`lsof -a -p ${pid} -d cwd 2>/dev/null | tail -1`, { encoding: 'utf-8', timeout: 3000 }).trim();
-      fs.appendFileSync('/tmp/picgo-debug.log', `cwd: ${cwd}\n`);
-      // 从 cwd 行提取路径
-      const match = cwd.match(/\/.*/);
-      if (match && match[0].includes('personal-website')) {
-        return match[0];
-      }
-    } catch (e) {}
-    
-  } catch (e) {
-    fs.appendFileSync('/tmp/picgo-debug.log', `错误: ${e.message}\n`);
-  }
+  } catch (e) {}
   return null;
 }
 
-// 从 Markdown 文件开头解析 type 字段
+// ============ 类型检测 ============
+
+// 从 Markdown 文件解析 type
 function getTypeFromMarkdown(filePath) {
-  try {
-    if (!filePath || !fs.existsSync(filePath)) return 'img';
-    
-    const content = fs.readFileSync(filePath, 'utf-8');
-    const lines = content.split('\n');
-    
-    // 读取前 10 行查找 type 字段
-    for (let i = 0; i < Math.min(10, lines.length); i++) {
-      const line = lines[i].trim();
-      // 支持多种格式: type: diary, type=diary, type:diary
-      const match = line.match(/^type\s*[:=]\s*(\w+)/i);
-      if (match) {
-        const type = match[1].toLowerCase();
-        // 映射为有效的分类
-        const validTypes = ['diary', 'technique', 'publication', 'project'];
-        if (validTypes.includes(type)) {
-          return type;
-        }
+  if (!filePath || !fs.existsSync(filePath)) return 'diary';
+  
+  const content = fs.readFileSync(filePath, 'utf-8');
+  const lines = content.split('\n');
+  
+  // 读取前 15 行查找 type 字段
+  for (let i = 0; i < Math.min(15, lines.length); i++) {
+    const line = lines[i].trim();
+    const match = line.match(/^type\s*[:=]\s*(\w+)/i);
+    if (match) {
+      const type = match[1].toLowerCase();
+      const validTypes = ['diary', 'technique', 'publication', 'project'];
+      if (validTypes.includes(type)) {
+        return type;
       }
     }
-  } catch (e) {}
-  return 'img';
+  }
+  
+  // 从路径推断
+  if (filePath.includes('/diary/')) return 'diary';
+  if (filePath.includes('/techniques/')) return 'technique';
+  if (filePath.includes('/projects/')) return 'project';
+  if (filePath.includes('/publications/')) return 'publication';
+  
+  return 'diary';
 }
 
-// 生成带时间戳和 Markdown 文件名的文件名
-function generateKey(sourcePath, fileType) {
+// ============ Frontmatter 解析 ============
+
+// 解析 frontmatter 中的媒体文件路径
+function parseFrontmatterMedia(filePath) {
+  if (!filePath || !fs.existsSync(filePath)) return [];
+  
+  const content = fs.readFileSync(filePath, 'utf-8');
+  const mediaFiles = [];
+  
+  // 检查是否有 frontmatter
+  if (!content.startsWith('---')) return mediaFiles;
+  
+  const endIndex = content.indexOf('\n---', 3);
+  if (endIndex === -1) return mediaFiles;
+  
+  const frontmatter = content.substring(3, endIndex).trim();
+  const lines = frontmatter.split('\n');
+  
+  let currentArray = null;
+  
+  for (const line of lines) {
+    // 检测数组开始 (2空格 + -)
+    if (line.match(/^  - /)) {
+      const value = line.replace(/^  - /, '').trim();
+      // 只收集非 http 的本地文件
+      if (value && !value.startsWith('http')) {
+        if (currentArray === 'images' || currentArray === 'covers') {
+          mediaFiles.push({ field: 'images', value, line });
+        } else if (currentArray === 'videos') {
+          mediaFiles.push({ field: 'videos', value, line });
+        } else if (currentArray === 'audios') {
+          mediaFiles.push({ field: 'audios', value, line });
+        }
+      }
+      continue;
+    }
+    
+    // 检测键值对
+    const kvMatch = line.match(/^(\w+):\s*(.*)$/);
+    if (kvMatch) {
+      const key = kvMatch[1];
+      const value = kvMatch[2].trim();
+      
+      // 更新当前数组状态
+      if (['images', 'covers', 'videos', 'audios'].includes(key)) {
+        currentArray = key;
+      } else {
+        currentArray = null;
+      }
+      
+      // 处理 coverImage
+      if (key === 'coverImage' && value && !value.startsWith('http')) {
+        mediaFiles.push({ field: 'coverImage', value, line });
+      }
+      
+      // 空数组重置
+      if (value === '[]') {
+        currentArray = null;
+      }
+    } else if (!line.match(/^  /)) {
+      // 非缩进行，重置数组状态
+      currentArray = null;
+    }
+  }
+  
+  return mediaFiles;
+}
+
+// 将本地路径转换为绝对路径
+function resolveMediaPath(relativePath, mdFilePath) {
+  const mdDir = pathModule.dirname(mdFilePath);
+  
+  if (relativePath.startsWith('./')) {
+    return pathModule.join(mdDir, relativePath.slice(2));
+  } else if (relativePath.startsWith('../')) {
+    return pathModule.join(mdDir, relativePath);
+  } else {
+    return pathModule.join(mdDir, relativePath);
+  }
+}
+
+// ============ 文件上传 ============
+
+// 生成 COS 路径
+function generateKey(sourcePath, mdPath, fileType, mediaType) {
   const ext = pathModule.extname(sourcePath) || '.png';
   const basename = pathModule.basename(sourcePath, ext);
   const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '').replace('T', '-');
   
-  // 清理文件名中的特殊字符
+  // 清理文件名
   const cleanName = basename.replace(/[^\w\u4e00-\u9fa5-]/g, '-').replace(/-+/g, '-');
   
-  // 从源文件路径提取 markdown 文件名（不含扩展名）
-  const mdBasename = pathModule.basename(sourcePath, pathModule.extname(sourcePath));
-  const cleanMdName = mdBasename.replace(/[^\w\u4e00-\u9fa5-]/g, '-').replace(/-+/g, '-');
+  // 从 markdown 文件名提取标识
+  let cleanMdName = 'unknown';
+  if (mdPath) {
+    const mdBasename = pathModule.basename(mdPath, pathModule.extname(mdPath));
+    cleanMdName = mdBasename.replace(/[^\w\u4e00-\u9fa5-]/g, '-').replace(/-+/g, '-');
+  }
   
   return `${fileType}/${timestamp}-${cleanMdName}-${cleanName}${ext}`;
 }
@@ -201,11 +287,26 @@ function downloadFile(url) {
 // 上传到 COS
 function uploadToCos(filePath, key) {
   return new Promise((resolve, reject) => {
-    const body = fs.readFileSync(filePath);
-    cos.putObject({ Bucket: bucket, Region: region, Key: key, Body: body, ContentLength: body.length }, (err) => {
-      try { fs.unlinkSync(filePath); } catch (e) {}
-      if (err) { reject(err); } else { resolve('https://' + bucket + '.cos.' + region + '.myqcloud.com/' + key); }
-    });
+    try {
+      const body = fs.readFileSync(filePath);
+      cos.putObject({
+        Bucket: bucket,
+        Region: region,
+        Key: key,
+        Body: body,
+        ContentLength: body.length
+      }, (err) => {
+        // 清理临时文件
+        try { fs.unlinkSync(filePath); } catch (e) {}
+        if (err) {
+          reject(err);
+        } else {
+          resolve(`${cosBaseUrl}/${key}`);
+        }
+      });
+    } catch (e) {
+      reject(e);
+    }
   });
 }
 
@@ -221,11 +322,76 @@ async function processFile(input, mdPath, fileType) {
     filePath = decodeURIComponent(input.replace('file://', ''));
   }
   
-  const key = generateKey(mdPath || filePath, fileType);
+  const key = generateKey(mdPath || filePath, mdPath, fileType, 'image');
   return uploadToCos(filePath, key);
 }
 
-// 获取输入文件
+// ============ Frontmatter 媒体处理 ============
+
+// 上传并替换 frontmatter 中的本地媒体
+async function uploadFrontmatterMedia(mdPath, fileType) {
+  const mediaFiles = parseFrontmatterMedia(mdPath);
+  
+  if (mediaFiles.length === 0) {
+    return [];
+  }
+  
+  console.log(`发现 ${mediaFiles.length} 个 frontmatter 本地媒体文件`);
+  
+  const results = [];
+  let content = fs.readFileSync(mdPath, 'utf-8');
+  
+  for (const media of mediaFiles) {
+    const localPath = resolveMediaPath(media.value, mdPath);
+    
+    if (!fs.existsSync(localPath)) {
+      console.log(`  [跳过] 文件不存在: ${localPath}`);
+      continue;
+    }
+    
+    // 检测媒体类型
+    let mediaType = 'image';
+    if (/\.(mp4|webm|ogg|mov)$/i.test(localPath)) mediaType = 'video';
+    if (/\.(mp3|wav|ogg|m4a)$/i.test(localPath)) mediaType = 'audio';
+    
+    const key = generateKey(localPath, mdPath, fileType, mediaType);
+    
+    console.log(`  [上传] ${media.value}...`);
+    try {
+      const url = await uploadToCos(localPath, key);
+      console.log(`  [成功] ${url}`);
+      results.push({ original: media.value, url });
+      
+      // 替换 markdown 中的路径
+      if (media.field === 'coverImage') {
+        // coverImage: ./covers/xxx.jpg -> coverImage: https://...
+        content = content.replace(
+          new RegExp(`^${escapeRegex(media.line)}$`, 'm'),
+          media.line.replace(media.value, url)
+        );
+      } else {
+        // 数组中的值
+        content = content.replace(
+          new RegExp(`^  - ${escapeRegex(media.value)}$`, 'm'),
+          `  - ${url}`
+        );
+      }
+    } catch (e) {
+      console.log(`  [失败] ${e.message}`);
+    }
+  }
+  
+  // 写入更新后的内容
+  if (results.length > 0) {
+    fs.writeFileSync(mdPath, content, 'utf-8');
+    console.log(`[完成] 已更新 ${results.length} 个媒体链接`);
+  }
+  
+  return results;
+}
+
+// ============ 主程序 ============
+
 async function getInputFiles() {
   let inputs = process.argv.slice(2).filter(arg => !arg.startsWith('-'));
   
@@ -244,20 +410,23 @@ async function getInputFiles() {
 }
 
 (async () => {
-  fs.appendFileSync('/tmp/picgo-debug.log', `=== 脚本开始 ===\n`);
   const inputs = await getInputFiles();
-  fs.appendFileSync('/tmp/picgo-debug.log', `输入文件: ${JSON.stringify(inputs)}\n`);
   
   // 获取 Typora 当前打开的 Markdown 文件
   const mdPath = getTyporaMarkdownPath();
-  fs.appendFileSync('/tmp/picgo-debug.log', `mdPath: ${mdPath}\n`);
   
   // 从 Markdown 文件解析 type
   const fileType = getTypeFromMarkdown(mdPath);
-  fs.appendFileSync('/tmp/picgo-debug.log', `fileType: ${fileType}\n`);
   
+  // 1. 先处理 frontmatter 中的本地媒体
+  if (mdPath) {
+    await uploadFrontmatterMedia(mdPath, fileType);
+  }
+  
+  // 2. 处理当前输入的图片（Typora 上传的图片）
   const urls = await Promise.all(inputs.map(fp => processFile(fp, mdPath, fileType)));
   console.log(urls.join('\n'));
+  
   process.exit(0);
 })().catch(err => {
   console.error('上传失败:', err.message || err);
