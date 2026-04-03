@@ -1,28 +1,4 @@
 {
-  "2026-04-01-git-tutorial/2026-04-01-git-tutorial.md": {
-    "signature": {
-      "mtime": 1775041729261.7026,
-      "size": 2122
-    },
-    "technique": {
-      "id": 0,
-      "title": "Git 日常使用指南",
-      "date": "2026-04-01T00:00:00.000Z",
-      "content": "\n## 前言\n\nGit 是目前最流行的版本控制系统，掌握 Git 的日常使用命令对于开发者来说至关重要。\n\n## 基础配置\n\n```bash\n# 设置用户名和邮箱\ngit config --global user.name \"Your Name\"\ngit config --global user.email \"your.email@example.com\"\n\n# 查看配置\ngit config --list\n```\n\n## 日常工作流\n\n### 1. 克隆仓库\n\n```bash\ngit clone https://github.com/user/repo.git\n```\n\n### 2. 创建和切换分支\n\n```bash\n# 创建新分支\ngit branch feature-new\n\n# 切换分支\ngit checkout feature-new\n\n# 创建并切换（简写）\ngit checkout -b feature-new\n```\n\n### 3. 提交代码\n\n```bash\n# 查看状态\ngit status\n\n# 添加文件\ngit add .           # 添加所有文件\ngit add filename    # 添加指定文件\n\n# 提交\ngit commit -m \"提交信息\"\n\n# 推送\ngit push origin feature-new\n```\n\n## 常用操作\n\n### 查看历史\n\n```bash\ngit log                    # 查看提交历史\ngit log --oneline         # 简洁模式\ngit log -n 5              # 最近5条\n```\n\n### 撤销操作\n\n```bash\ngit checkout -- filename    # 撤销工作区修改\ngit reset HEAD filename     # 撤销暂存\ngit reset --soft HEAD~1     # 撤销上次提交（保留修改）\n```\n\n## 分支管理\n\n```bash\n# 查看分支\ngit branch              # 本地分支\ngit branch -r           # 远程分支\ngit branch -a           # 所有分支\n\n# 删除分支\ngit branch -d branchname    # 删除已合并的分支\ngit branch -D branchname    # 强制删除\n```\n\n## 实用技巧\n\n### 1. 暂存工作区\n\n```bash\ngit stash               # 暂存当前修改\ngit stash pop           # 恢复暂存\ngit stash list          # 查看暂存列表\n```\n\n### 2. 拉取远程更新\n\n```bash\ngit pull origin main    # 拉取并合并\ngit fetch origin        # 仅获取\n```\n\n### 3. 变基（Rebase）\n\n```bash\ngit rebase main         # 整理提交历史\n```\n\n## 总结\n\n熟练使用这些命令可以让你的版本控制工作更加高效。建议每天开始工作前先 `git pull`，完成后及时 `git push`。\n",
-      "isPublic": true,
-      "images": [],
-      "videos": [],
-      "audios": [],
-      "tags": [
-        "Git",
-        "版本控制"
-      ],
-      "_fileSignature": {
-        "mtime": 1775041729261.7026,
-        "size": 2122
-      }
-    }
-  },
   "2026-04-01-python-venv-guide/2026-04-01-python-venv-guide.md": {
     "signature": {
       "mtime": 1775041729261.391,
@@ -44,6 +20,30 @@
       "_fileSignature": {
         "mtime": 1775041729261.391,
         "size": 1697
+      }
+    }
+  },
+  "2026-04-01-电气试验高级工/2025年高级工实操考试项目标准.md": {
+    "signature": {
+      "mtime": 1775144250626.4343,
+      "size": 8676
+    },
+    "technique": {
+      "id": 0,
+      "title": "2025年高级工实操考试项目标准",
+      "date": "2026-04-02T00:00:00.000Z",
+      "content": "\r\n\r\n### 2025年高级工实操考试项目标准\r\n\r\n####  实操卷1\r\n\r\n##### 考核项目1：变压器短路试验（单相法低电压短路阻抗）\r\n\r\n（1）交接标准(Q/GDW10 108-02-001-2014《输变电设备交接试验规程》)：\r\n\r\n![image-20250824164622950](https://s2.loli.net/2025/08/24/3r4GpaD28zW5UZt.png)\r\n\r\n（2）例行标准：\r\n\r\n无\r\n\r\n（3）诊断标准：\r\n\r\n诊断绕组是否发生变形时进行本项目。试验方法参见DL/T 1093。宜在最大分接位置和相同电流下测量。试验电流可用额定电流，亦可低于额定值，但不宜小于5A。\r\n不同容量及电压等级的变压器，要求分别如下：\r\na） **容量100MVA 及以下且电压等级220kV 以下的变压器，初值差不超过±2%**；\r\nb） 容量100MVA 以上或电压等级220kV 以上的变压器，初值差不超过±1.6%；\r\nc） **容量100MVA 及以下且电压等级220kV 以下的变压器三相之间的最大相对互差不应大于2.5%**；\r\nd） 容量100MVA 以上或电压等级220kV 以上的变压器三相之间的的最大相对互差不应大于2%。\r\n\r\n##### 考核项目2：变压器绕组直流泄漏电流测量\r\n\r\n（1）交接标准(Q/GDW10 108-02-001-2014《输变电设备交接试验规程》)：\r\n\r\n![Q/GDW10 108-02-001-2014](https://s2.loli.net/2025/08/24/oBXY6zUvmGiN8en.png)\r\n\r\n（2）例行标准：\r\n\r\n无\r\n\r\n（3）诊断标准：\r\n\r\n怀疑绝缘存在受潮等缺陷时进行本项目，测量绕组短路加压，其它绕组短路接地，施加直流电\r\n压值为20kV（35kV 绕组）、40kV（66kV～330kV 绕组）、60kV（500kV 及以上绕组），加压60s 时\r\n的泄漏电流**与初值比应没有明显增加，与同型设备比没有明显差异**。\r\n\r\n![image-20250824170411619](https://s2.loli.net/2025/08/24/g3dRB7DMIzbKcGv.png)\r\n\r\n##### 考核项目3：电压互感器绝缘电阻测量\r\n\r\n（1）交接标准：\r\n\r\n![image-20250905213954898](https://s2.loli.net/2025/09/05/LqQOaiYNudeXpJM.png)\r\n\r\n（2）例行标准：\r\n\r\n![image-20250824170717153](https://s2.loli.net/2025/08/24/8imsNCjoOg3nfzk.png)\r\n\r\n说明：一次绕组用2500V 兆欧表，**二次绕组采用1000V 兆欧表**。测量时非被测绕组应接地。同等或相近测量条件下，绝缘电阻应无显著降低。\r\n\r\n（3）诊断标准：\r\n\r\n无\r\n\r\n#### 实操卷2\r\n\r\n##### 考核项目1：变压器空载试验（单相法低电压空载试验）\r\n\r\n（1）交接标准(Q/GDW10 108-02-001-2014《输变电设备交接试验规程》)：\r\n\r\n![image-20250824171153495](https://s2.loli.net/2025/08/24/BJ54exocGdmnQqI.png)\r\n\r\n（2）例行标准：\r\n\r\n无\r\n\r\n（3）诊断标准：\r\n\r\n诊断铁心结构缺陷、匝间绝缘损坏等可进行本项目。试验电压尽可能接近额定值。试验电压值\r\n和接线应与上次试验保持一致。**测量结果与上次相比，不应有明显差异**。对单相变压器相间或三相\r\n变压器**两个边相，空载电流差异不应超过10%**。分析时一并注意空载损耗的变化。\r\n\r\n##### 考核项目2：电压互感器变比测量\r\n\r\n（1）交接标准：\r\n\r\n![image-20250905214304918](https://s2.loli.net/2025/09/05/h9M1qn6XSFv3DKV.png)\r\n\r\n与出厂值比无明显变化，并符合准确级别规定。对于计量用压变应进行误差测量试验，非计量用进行变比检查。\r\n\r\n（2）例行标准：\r\n\r\n无\r\n\r\n（3）诊断标准：\r\n\r\n在80%～100%的额定电压范围内，在一次侧施加任一电压值，测量二次侧电压，验证电压比。简单检查可取更低电压。变比误差不超过准确级。\r\n\r\n##### 考核项目3：变压器绕组直流电阻测量\r\n\r\n（1）交接标准：\r\n\r\n![image-20250905213022096](https://s2.loli.net/2025/09/05/gkrLA6IunbQDlda.png)\r\n\r\n（2）例行标准：\r\n\r\n![image-20250824204645217](https://s2.loli.net/2025/08/24/zoFfhHZcGkpC7Xb.png)\r\n\r\n说明：同一温度下各绕组电阻的相间差别或线间差别不大于规定值。此外，还要求同一温度下，各相电阻的初值差不超过±2%。\r\n\r\n（3）诊断标准：\r\n\r\n同一温度下各绕组电阻的相间差别或线间差别不大于规定值。此外，还要求同一温度下，各相电阻的初值差不超过±2%。\r\n\r\n#### 实操卷3\r\n\r\n##### 考核项目1：操作杆工频耐压试验\r\n\r\n（1）**DL/T976-2017<<带电作业工具、装置和设备预防性试验规程>>**\r\n\r\n从金属头开始手动测量[700](tel:700)㎜，擦拭表面，绕制50mm长度铝箔接地，耐压值45kV，60s。\r\n\r\n测试结束后，用手摸无发热，试验中无放电与电压波动，耐压前后绝缘电阻无明显变化。\r\n\r\n##### 考核项目2：金属氧化物避雷器直流参数测试\r\n\r\n（1）交接标准：\r\n\r\n![image-20250905214552215](https://s2.loli.net/2025/09/05/3fAGlLs2vrXVce4.png)\r\n\r\n（2）例行标准：\r\n\r\n![image-20250824203150661](https://s2.loli.net/2025/08/24/LTw2YDE5PM9KSOZ.png)\r\n\r\n（3）诊断标准：\r\n\r\n无\r\n\r\n##### 考核项目3：避雷器绝缘电阻测量\r\n\r\n（1）交接标准：\r\n\r\n![image-20250824203124099](https://s2.loli.net/2025/08/24/mkobITflCE4G7MJ.png)\r\n\r\n（2）例行标准：\r\n\r\n用2500V 的兆欧表测量。底座绝缘电阻$\\geq$100M$\\Omega$\r\n\r\n（3）诊断标准：无\r\n\r\n#### 实操卷4\r\n\r\n##### 考核项目1：电容器耐压试验\r\n\r\n（1）交接标准：\r\n\r\n![image-20250824194338079](https://s2.loli.net/2025/08/24/dNaPfisMFJITmgl.png)\r\n\r\n![image-20250824194426084](https://s2.loli.net/2025/08/24/hVNo53CrJ1T7jOL.png)\r\n\r\n耐压试验中无异常放电、发热，绝缘电阻无明显变化，**耐压前后绝缘电阻值均大于2000M$\\Omega$**\r\n\r\n（2）例行标准：无\r\n\r\n（3）诊断标准：无\r\n\r\n##### 考核项目2：电容器电容量测量\r\n\r\n（1）交接标准：\r\n\r\n![image-20250905214951762](https://s2.loli.net/2025/09/05/heEWFM6dr9GUA3D.png)\r\n\r\n（2）例行标准：单台电容器电容量与额定值的相对偏差应在-5%～10%之间，且初值差不超过±5%。\r\n\r\n（3）诊断标准：无\r\n\r\n##### 考核项目3：避雷器绝缘电阻测量\r\n\r\n见实操卷3-考核项目3\r\n\r\n#### 实操卷5\r\n\r\n##### 考核项目1：电容式电流互感器主、末屏电容量及介质损耗测量\r\n\r\n（1）交接标准(Q/GDW10 108-02-001-2014《输变电设备交接试验规程》)：\r\n\r\n![image-20250824180442039](https://s2.loli.net/2025/08/24/qprx72ClgFtV6kR.png)\r\n\r\n（2）例行标准：\r\n\r\n![image-20250824180231292](https://s2.loli.net/2025/08/24/a7H6QisbTAguCPd.png)\r\n\r\n说明：当末屏绝缘电阻不能满足要求时，可通过测量末屏介质损耗因数作进一步判断，测量电压为2kV，通常要求小于0.015。\r\n\r\n（3）诊断标准：\r\n\r\n无\r\n\r\n##### 考核项目2：电压互感器励磁特性试验\r\n\r\n（1）交接标准：\r\n\r\n![image-20250905215444872](https://s2.loli.net/2025/09/05/PwhzgTGOoqKsLRl.png)\r\n\r\n（2）例行标准：\r\n\r\n（3）诊断标准：\r\n\r\n对核心部件或主体进行解体性检修之后，或计量要求时，进行本项目。试验时，电压施加在二\r\n次端子上，电压波形为标准正弦波。测量点至少包括额定电压的0.2、0.5、0.8、1.0、1.2 倍，**测量**\r\n**出对应的励磁电流，与出厂值相比应无显著改变；与同一批次、同一型号的其它电磁式电压互感器**\r\n**相比，彼此差异不应大于30%**。\r\n\r\n##### 考核项目3：电压互感器绝缘电阻测量\r\n\r\n见实操卷1-考核项目3\r\n\r\n#### 实操卷6\r\n\r\n##### 考核项目1：电容式电压互感器介质损耗测量\r\n\r\n（1）交接标准：\r\n\r\n![image-20250905215836630](https://s2.loli.net/2025/09/05/X9NBEwSmk2xt4sn.png)\r\n\r\n（2）例行标准：\r\n\r\n![image-20250824173918613](https://s2.loli.net/2025/08/24/ntli1QcyETPS6BH.png)\r\n\r\n（3）诊断标准：\r\n\r\n无\r\n\r\n##### 考核项目2：电流互感器励磁特性试验\r\n\r\n（1）交接标准：\r\n\r\n![image-20250905220059071](https://s2.loli.net/2025/09/05/AD93rCPFvjsYUzS.png)\r\n\r\n（2）例行标准：\r\n\r\n无\r\n\r\n（3）诊断标准：\r\n\r\n无\r\n\r\n##### 考核项目3：电流互感器绝缘电阻测量\r\n\r\n（1）交接标准：\r\n\r\n![image-20250905220241688](https://s2.loli.net/2025/09/05/ncLXiIrTC1gqmsN.png)\r\n\r\n（2）例行标准：\r\n\r\n![image-20250824172657890](https://s2.loli.net/2025/08/24/2w9QgePKWZdhqyB.png)\r\n\r\n说明：**采用2500V 兆欧表测量**。当有二个一次绕组时，还应测量一次绕组间的绝缘电阻。一次绕组的\r\n绝缘电阻应大于3000MΩ，或与上次测量值相比无显著变化。有末屏端子的，测量末屏对地绝缘电阻。\r\n\r\n（3）诊断标准：\r\n\r\n无\r\n\r\n\r\n\r\n",
+      "isPublic": true,
+      "images": [],
+      "videos": [],
+      "audios": [],
+      "tags": [
+        "电气试验",
+        "高级工"
+      ],
+      "_fileSignature": {
+        "mtime": 1775144250626.4343,
+        "size": 8676
       }
     }
   }

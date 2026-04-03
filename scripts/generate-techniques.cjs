@@ -94,9 +94,13 @@ function readTechniqueFiles() {
       const content = fs.readFileSync(mdFilePath, 'utf8');
       const parsed = matter(content);
 
-      // 处理相对路径：将 ./xxx 转换为 /techniques/folderName/xxx
+      // 处理相对路径：将 ./xxx 转换为 /techniques/folderName/xxx，或保持 COS URL 不变
       const resolveRelativePath = (filePath) => {
         if (!filePath) return undefined;
+        // 如果已经是 COS URL 或其他 http/https URL，保持不变
+        if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
+          return filePath;
+        }
         if (filePath.startsWith('/')) return filePath;
         if (filePath.startsWith('./')) {
           return `/techniques/${folder}/${filePath.slice(2)}`;

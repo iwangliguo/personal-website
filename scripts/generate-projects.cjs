@@ -89,11 +89,37 @@ function readProjectFiles() {
       const content = fs.readFileSync(mdFilePath, 'utf8');
       const parsed = matter(content);
 
+      // 将正文中的相对路径转换为绝对路径（保持 COS URL 不变）
+      const resolveContentPaths = (md) => {
+        const toAbs = (src) => {
+          if (!src) return src;
+          // 如果已经是 COS URL 或其他 http/https URL，保持不变
+          if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')) {
+            return src;
+          }
+          return src.startsWith('./') ? `/projects/${folder}/${src.slice(2)}` : `/projects/${folder}/${src}`;
+        };
+
+        // 处理 Markdown 图片语法：![alt](./xxx)
+        let result = md.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, src) => {
+          const abs = toAbs(src);
+          return abs === src ? match : `![${alt}](${abs})`;
+        });
+
+        // 处理 HTML 标签中的 src="..." 属性（img / video / audio / source）
+        result = result.replace(/(<(?:img|video|audio|source)[^>]*\s)src=(["'])([^"']+)\2/gi, (match, prefix, quote, src) => {
+          const abs = toAbs(src);
+          return abs === src ? match : `${prefix}src=${quote}${abs}${quote}`;
+        });
+
+        return result;
+      };
+
       const project = {
         id: 0,
         title: parsed.data.title,
         date: parsed.data.date,
-        content: parsed.content,
+        content: resolveContentPaths(parsed.content),
         isPublic: parsed.data.isPublic ?? true,
         tags: parsed.data.tags || [],
         _fileSignature: fileSignature
