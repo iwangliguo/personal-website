@@ -1,5 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import { getTechniqueById, getPublicTechniques } from '../data/techniques';
 import '../styles/Academic.css';
 
@@ -39,7 +41,9 @@ const TechniqueDetail = () => {
         )}
 
         <article className="diary-detail-content">
-          <ReactMarkdown>{technique.content}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+            {technique.content}
+          </ReactMarkdown>
         </article>
 
         <div className="entry-nav">
