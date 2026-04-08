@@ -964,6 +964,18 @@ body {
   display: block;
 }
 
+.markdown-content img,
+.diary-detail-content img {
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  max-height: 70vh;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  margin: 1rem auto;
+  display: block;
+}
+
 /* 空状态 */
 .empty-state {
   text-align: center;
