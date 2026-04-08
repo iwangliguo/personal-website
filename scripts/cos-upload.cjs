@@ -64,12 +64,15 @@ function escapeRegex(str) {
 function getTyporaImage() {
   try {
     const tmpFiles = fs.readdirSync(process.env.TMPDIR);
+    const now = Date.now();
+    // 只选择最近 30 秒内修改的图片，避免获取到旧的缓存文件
     const recentImages = tmpFiles
       .filter(f => /\.(png|jpg|jpeg|gif|webp)$/i.test(f))
       .map(f => {
         const stat = fs.statSync(pathModule.join(process.env.TMPDIR, f));
-        return { name: f, path: pathModule.join(process.env.TMPDIR, f), mtime: stat.mtime };
+        return { name: f, path: pathModule.join(process.env.TMPDIR, f), mtime: stat.mtime, age: now - stat.mtimeMs };
       })
+      .filter(f => f.age < 30000) // 30秒内的文件
       .sort((a, b) => b.mtime - a.mtime);
     
     if (recentImages.length > 0) {
@@ -450,6 +453,19 @@ async function checkAllMarkdown() {
 
 const args = process.argv.slice(2);
 
+// 从命令行参数或 lsof 获取 md 文件路径
+function resolveMdPath() {
+  // 优先使用命令行参数中的 md 文件路径
+  for (const arg of args) {
+    if (arg.endsWith('.md') && arg.includes('personal-website') && fs.existsSync(arg)) {
+      return pathModule.resolve(arg);
+    }
+  }
+  
+  // 其次使用 lsof 获取 Typora 当前打开的文件
+  return getTyporaMarkdownPath();
+}
+
 // 帮助信息
 if (args.includes('--help') || args.includes('-h')) {
   console.log(`
@@ -515,8 +531,8 @@ async function getInputFiles() {
 (async () => {
   const inputs = await getInputFiles();
   
-  // 获取 Typora 当前打开的 Markdown 文件
-  const mdPath = getTyporaMarkdownPath();
+  // 获取当前编辑的 Markdown 文件（优先命令行参数，其次 lsof）
+  const mdPath = resolveMdPath();
   
   // 从 Markdown 文件解析 type
   const fileType = getTypeFromMarkdown(mdPath);
