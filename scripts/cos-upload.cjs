@@ -363,7 +363,8 @@ async function processFile(input, mdPath, fileType) {
     filePath = decodeURIComponent(input.replace('file://', ''));
   }
   
-  const key = generateKey(mdPath || filePath, mdPath, fileType, 'image');
+  // 注意：sourcePath 必须是实际的图片文件路径，不能用 mdPath
+  const key = generateKey(filePath, mdPath, fileType, 'image');
   return uploadToCos(filePath, key);
 }
 
