@@ -952,6 +952,17 @@ body {
   background: var(--bg-secondary);
 }
 
+.markdown-content video {
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  background: #000;
+  margin: 1.5rem 0;
+  display: block;
+}
+
 /* 空状态 */
 .empty-state {
   text-align: center;
