@@ -953,13 +953,13 @@ body {
 }
 
 .markdown-content video {
-  max-width: 100%;
-  width: 100%;
-  height: auto;
+  max-width: 45%;
+  width: auto;
+  max-height: 50vh;
   border-radius: 8px;
   box-shadow: var(--shadow);
   background: #000;
-  margin: 1.5rem 0;
+  margin: 1.5rem auto;
   display: block;
 }
 
