@@ -31,7 +31,7 @@ function App() {
           </Routes>
         </main>
         <footer className="footer">
-          <p>&copy; {new Date().getFullYear()} {profileData.name}. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} hins wang. All rights reserved.</p>
         </footer>
       </div>
     </Router>

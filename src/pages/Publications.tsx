@@ -77,7 +77,7 @@ const Publications = () => {
                       {pub.link && (
                         <a href={pub.link} target="_blank" rel="noopener noreferrer" className="pub-link"
                           onClick={e => e.stopPropagation()}>
-                          会议链接
+                          详情链接
                         </a>
                       )}
                       {pub.pdf && (
