@@ -14,19 +14,19 @@ Apple HWTE为某款Apple Watch设计的一个自动化测试平台。
 
 ## 系统架构
 
-
+![apple park](https://hins-1417576783.cos.ap-shanghai.myqcloud.com/project/20260408-152411-2021-04-overdryrun-apple-park.jpg)
 
 ## 硬件清单
 
-![](https://hins-1417576783.cos.ap-shanghai.myqcloud.com/project/20260408-151619-2021-04-overdryrun-2021-04-overdryrun.md)
+
 
 ## 信号回路
 
-![苹果上海](https://hins-1417576783.cos.ap-shanghai.myqcloud.com/project/20260408-151525-2021-04-overdryrun-2021-04-overdryrun.md)
+![世纪大道出站口](https://hins-1417576783.cos.ap-shanghai.myqcloud.com/project/20260408-152152-2021-04-overdryrun-世纪大道出站口.jpg)
 
 ## 软件结构
 
-![世纪大道出站口](https://hins-1417576783.cos.ap-shanghai.myqcloud.com/project/20260408-151358-2021-04-overdryrun-2021-04-overdryrun.md)
+
 
 ## 项目展示
 
