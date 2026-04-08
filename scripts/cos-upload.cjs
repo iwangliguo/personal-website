@@ -82,28 +82,32 @@ function getTyporaImage() {
   return null;
 }
 
+// 获取 Typora 进程 PID
+function getTyporaPid() {
+  const { execSync } = require('child_process');
+  try {
+    const pid = execSync("pgrep -ix Typora", { encoding: 'utf-8', timeout: 3000 }).trim();
+    return pid ? pid.split('\n')[0] : null;
+  } catch (e) {
+    try {
+      const output = execSync("ps aux | grep -i 'Typora.app' | grep -v grep | head -1", { encoding: 'utf-8', timeout: 3000 }).trim();
+      const match = output.match(/\d+/);
+      return match ? match[0] : null;
+    } catch (e2) {
+      return null;
+    }
+  }
+}
+
 // 通过 lsof 获取 Typora 当前打开的 markdown 文件
 function getTyporaMarkdownPath() {
   const { execSync } = require('child_process');
   try {
-    // 获取 Typora 进程 PID
-    let pid = null;
-    try {
-      pid = execSync("pgrep -ix Typora", { encoding: 'utf-8', timeout: 3000 }).trim().split('\n')[0];
-    } catch (e) {}
-    
-    if (!pid) {
-      try {
-        pid = execSync("ps aux | grep -i 'Typora.app' | grep -v grep | head -1", { encoding: 'utf-8', timeout: 3000 }).trim();
-        const match = pid.match(/\d+/);
-        pid = match ? match[0] : null;
-      } catch (e) {}
-    }
-    
+    const pid = getTyporaPid();
     if (!pid) return null;
     
     // 获取该进程打开的所有文件
-    const lsof = execSync(`lsof -p ${pid} 2>/dev/null`, { encoding: 'utf-8', timeout: 5000 });
+    const lsof = execSync(`lsof -p ${pid} -a -c Typora 2>/dev/null`, { encoding: 'utf-8', timeout: 5000 });
     
     // 查找 personal-website 目录下的 md 文件
     const lines = lsof.split('\n');
@@ -116,9 +120,43 @@ function getTyporaMarkdownPath() {
         }
       }
     }
-    
   } catch (e) {}
-  return null;
+  
+  // 如果 lsof 失败，尝试查找最近修改的 md 文件
+  return getRecentMarkdownFile();
+}
+
+// 查找最近修改的 md 文件（在 personal-website 目录下）
+function getRecentMarkdownFile() {
+  const publicDir = pathModule.join(__dirname, '..', 'public');
+  const now = Date.now();
+  let recentFile = null;
+  let recentTime = 0;
+  
+  function scanDir(dir) {
+    try {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.isDirectory() && !entry.name.startsWith('.')) {
+          scanDir(pathModule.join(dir, entry.name));
+        } else if (entry.name.endsWith('.md')) {
+          const filePath = pathModule.join(dir, entry.name);
+          try {
+            const stat = fs.statSync(filePath);
+            const age = now - stat.mtimeMs;
+            // 优先选择最近 5 分钟内修改的 md 文件
+            if (age < 5 * 60 * 1000 && stat.mtimeMs > recentTime) {
+              recentTime = stat.mtimeMs;
+              recentFile = filePath;
+            }
+          } catch (e) {}
+        }
+      }
+    } catch (e) {}
+  }
+  
+  scanDir(publicDir);
+  return recentFile;
 }
 
 // ============ 类型检测 ============
@@ -534,8 +572,13 @@ async function getInputFiles() {
   // 获取当前编辑的 Markdown 文件（优先命令行参数，其次 lsof）
   const mdPath = resolveMdPath();
   
+  // 调试信息
+  console.error(`[DEBUG] 输入文件: ${JSON.stringify(inputs)}`);
+  console.error(`[DEBUG] 检测到的 MD 文件: ${mdPath}`);
+  
   // 从 Markdown 文件解析 type
   const fileType = getTypeFromMarkdown(mdPath);
+  console.error(`[DEBUG] 解析的文件类型: ${fileType}`);
   
   // 1. 先处理 frontmatter 中的本地媒体
   if (mdPath) {
