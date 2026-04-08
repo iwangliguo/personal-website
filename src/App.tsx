@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { profileData } from './data/profile';
 import Navbar from './components/Navbar';
 import About from './pages/About';
 import Diaries from './pages/Diaries';
