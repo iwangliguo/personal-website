@@ -966,13 +966,13 @@ body {
 
 .markdown-content img,
 .diary-detail-content img {
-  max-width: 100%;
-  width: auto;
+  width: 80%;
   height: auto;
   max-height: 70vh;
+  object-fit: contain;
   border-radius: 8px;
   box-shadow: var(--shadow);
-  margin: 1rem auto;
+  margin: 1.5rem auto;
   display: block;
 }
 
