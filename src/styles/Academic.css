@@ -956,9 +956,9 @@ body {
 
 .markdown-content video,
 .diary-detail-content video {
-  width: 60%;
+  width: 33%;
   height: auto;
-  max-height: 40vh;
+  max-height: 33vh;
   object-fit: contain;
   border-radius: 8px;
   box-shadow: var(--shadow);
@@ -968,9 +968,9 @@ body {
 
 .markdown-content img,
 .diary-detail-content img {
-  width: 60%;
+  width: 33%;
   height: auto;
-  max-height: 40vh;
+  max-height: 33vh;
   object-fit: contain;
   border-radius: 8px;
   box-shadow: var(--shadow);
