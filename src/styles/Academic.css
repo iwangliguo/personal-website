@@ -760,6 +760,8 @@ body {
 .diary-cover-large img {
   width: 100%;
   height: auto;
+  max-height: 33vh;
+  object-fit: cover;
   display: block;
 }
 
@@ -954,7 +956,7 @@ body {
 
 .markdown-content video,
 .diary-detail-content video {
-  max-width: 60%;
+  width: 60%;
   height: auto;
   max-height: 40vh;
   object-fit: contain;
@@ -966,7 +968,7 @@ body {
 
 .markdown-content img,
 .diary-detail-content img {
-  max-width: 60%;
+  width: 60%;
   height: auto;
   max-height: 40vh;
   object-fit: contain;
