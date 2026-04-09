@@ -954,12 +954,12 @@ body {
 
 .markdown-content video,
 .diary-detail-content video {
-  max-width: 45%;
-  width: auto;
-  max-height: 50vh;
+  width: 60%;
+  height: auto;
+  max-height: 60vh;
+  object-fit: contain;
   border-radius: 8px;
   box-shadow: var(--shadow);
-  background: #000;
   margin: 1.5rem auto;
   display: block;
 }
