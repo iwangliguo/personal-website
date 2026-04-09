@@ -751,8 +751,8 @@ body {
 }
 
 .diary-cover-large {
-  width: 100%;
-  margin-bottom: 2rem;
+  width: 75%;
+  margin: 0 auto 2rem;
   border-radius: 8px;
   overflow: hidden;
 }
@@ -954,9 +954,9 @@ body {
 
 .markdown-content video,
 .diary-detail-content video {
-  width: 60%;
+  max-width: 60%;
   height: auto;
-  max-height: 60vh;
+  max-height: 40vh;
   object-fit: contain;
   border-radius: 8px;
   box-shadow: var(--shadow);
@@ -966,9 +966,9 @@ body {
 
 .markdown-content img,
 .diary-detail-content img {
-  width: 60%;
+  max-width: 60%;
   height: auto;
-  max-height: 60vh;
+  max-height: 40vh;
   object-fit: contain;
   border-radius: 8px;
   box-shadow: var(--shadow);
