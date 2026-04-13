@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/chat",
+      "destination": "/chat.html"
+    },
+    {
       "source": "/((?!.*\\..*|_next).*)",
       "destination": "/index.html"
     }
