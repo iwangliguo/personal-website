@@ -248,6 +248,26 @@
   cursor: not-allowed;
 }
 
+/* Voice Recording Button */
+.dify-chat-input button.recording {
+  background: linear-gradient(135deg, #fca5a5 0%, #f87171 100%);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Voice Error */
+.dify-voice-error {
+  padding: 8px 16px;
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 12px;
+  text-align: center;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
   .dify-chat-window {
