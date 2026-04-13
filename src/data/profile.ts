@@ -45,7 +45,7 @@ export interface ProfileData {
 
 export const profileData: ProfileData = {
   name: '欢迎来到hins的小破站',
-  title: '拉磨的驴',
+  title: '夏虫语冰',
   institution: '苏州供电公司',
   institutionAddress: '苏州市姑苏区三香路458号',
   email: '3108741604@qq.com',

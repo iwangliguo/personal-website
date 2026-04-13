@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { profileData } from '../data/profile';
+import DifyChatbot from '../components/DifyChatbot';
 import '../styles/Academic.css';
 
 const About = () => {
@@ -31,6 +32,9 @@ const About = () => {
                 className={`profile-image image-overlay ${isHovered ? 'image-show' : 'image-hide'}`}
               />
             </div>
+            
+            {/* Talk to hins */}
+            <DifyChatbot />
           </div>
 
           <div className="profile-info">
