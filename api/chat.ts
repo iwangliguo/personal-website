@@ -18,7 +18,7 @@ export default async function handler(
       return response.status(400).json({ error: 'Query is required' });
     }
 
-    // 使用流式响应模式
+    // 使用 blocking 响应模式，更稳定
     const res = await fetch(DIFY_API_URL, {
       method: 'POST',
       headers: {
@@ -28,34 +28,20 @@ export default async function handler(
       body: JSON.stringify({
         query,
         inputs: {},
-        response_mode: 'streaming',
+        response_mode: 'blocking',
         user: user || 'website-user',
         conversation_id: conversation_id || '',
       }),
     });
 
+    const data = await res.json();
+    
     if (!res.ok) {
-      const errorText = await res.text();
-      console.error('Dify API error:', errorText);
-      return response.status(res.status).json({ error: 'Dify API error', details: errorText });
+      console.error('Dify API error:', data);
+      return response.status(res.status).json({ error: 'Dify API error', details: data });
     }
 
-    // 设置流式响应头
-    response.setHeader('Content-Type', 'text/event-stream');
-    response.setHeader('Cache-Control', 'no-cache');
-    response.setHeader('Connection', 'keep-alive');
-
-    // 直接转发流式响应
-    res.body?.pipeTo(
-      new WritableStream({
-        write(chunk) {
-          response.send(chunk);
-        },
-        close() {
-          response.end();
-        },
-      })
-    );
+    return response.status(200).json(data);
   } catch (error) {
     console.error('Proxy error:', error);
     return response.status(500).json({ error: 'Internal server error' });

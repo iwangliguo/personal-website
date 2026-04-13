@@ -67,7 +67,6 @@ const DifyChatbot = () => {
             query: userMessage.content,
             conversation_id: conversationId,
             user: 'website-visitor',
-            stream: true,
           }),
         });
       } else {
@@ -80,7 +79,7 @@ const DifyChatbot = () => {
           body: JSON.stringify({
             query: userMessage.content,
             inputs: {},
-            response_mode: 'streaming',
+            response_mode: 'blocking',
             user: 'website-visitor',
             conversation_id: conversationId,
           }),
@@ -89,45 +88,18 @@ const DifyChatbot = () => {
 
       if (!response.ok) throw new Error('API request failed');
 
-      // 处理流式响应
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let fullContent = '';
-
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split('\n');
-
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(line.slice(6));
-                
-                if (data.event === 'message' || data.event === 'agent_message') {
-                  fullContent += data.answer || '';
-                  setStreamingContent(fullContent);
-                }
-                
-                if (data.conversation_id) {
-                  setConversationId(data.conversation_id);
-                }
-              } catch (e) {
-                // 忽略解析错误
-              }
-            }
-          }
-        }
+      // 处理 blocking 响应
+      const data = await response.json();
+      
+      // 保存 conversation_id 用于后续对话
+      if (data.conversation_id) {
+        setConversationId(data.conversation_id);
       }
 
-      // 流结束后，保存完整的消息
       const assistantMessage: Message = {
         id: tempId,
         role: 'assistant',
-        content: fullContent || '抱歉，我暂时无法回答这个问题。',
+        content: data.answer || '抱歉，我暂时无法回答这个问题。',
         timestamp: new Date(),
       };
 
