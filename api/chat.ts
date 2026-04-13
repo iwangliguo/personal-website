@@ -7,7 +7,6 @@ export default async function handler(
   request: VercelRequest,
   response: VercelResponse
 ) {
-  // 只允许 POST 请求
   if (request.method !== 'POST') {
     return response.status(405).json({ error: 'Method not allowed' });
   }
@@ -19,6 +18,7 @@ export default async function handler(
       return response.status(400).json({ error: 'Query is required' });
     }
 
+    // 使用流式响应模式
     const res = await fetch(DIFY_API_URL, {
       method: 'POST',
       headers: {
@@ -28,7 +28,7 @@ export default async function handler(
       body: JSON.stringify({
         query,
         inputs: {},
-        response_mode: 'blocking',
+        response_mode: 'streaming',
         user: user || 'website-user',
         conversation_id: conversation_id || '',
       }),
@@ -40,8 +40,22 @@ export default async function handler(
       return response.status(res.status).json({ error: 'Dify API error', details: errorText });
     }
 
-    const data = await res.json();
-    return response.status(200).json(data);
+    // 设置流式响应头
+    response.setHeader('Content-Type', 'text/event-stream');
+    response.setHeader('Cache-Control', 'no-cache');
+    response.setHeader('Connection', 'keep-alive');
+
+    // 直接转发流式响应
+    res.body?.pipeTo(
+      new WritableStream({
+        write(chunk) {
+          response.send(chunk);
+        },
+        close() {
+          response.end();
+        },
+      })
+    );
   } catch (error) {
     console.error('Proxy error:', error);
     return response.status(500).json({ error: 'Internal server error' });

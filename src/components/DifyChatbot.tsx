@@ -12,8 +12,6 @@ interface Message {
 const DIFY_API_URL = 'http://150.158.57.162:8081/v1/chat-messages';
 
 // 根据环境自动选择调用方式
-// 开发环境 (npm run dev): 直连 Dify API
-// 生产环境 (npm run build + Vercel): 走 /api/chat 代理（保护 API Key）
 const isProduction = import.meta.env.PROD;
 
 const DifyChatbot = () => {
@@ -29,6 +27,7 @@ const DifyChatbot = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [conversationId, setConversationId] = useState('');
+  const [streamingContent, setStreamingContent] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -37,7 +36,7 @@ const DifyChatbot = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, streamingContent]);
 
   const handleSend = async () => {
     if (!inputValue.trim() || isLoading) return;
@@ -52,24 +51,27 @@ const DifyChatbot = () => {
     setMessages((prev) => [...prev, userMessage]);
     setInputValue('');
     setIsLoading(true);
+    setStreamingContent('');
+
+    // 创建流式消息的临时 ID
+    const tempId = (Date.now() + 1).toString();
 
     try {
-      let data;
-      
+      let response;
+
       if (isProduction) {
-        const response = await fetch('/api/chat', {
+        response = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             query: userMessage.content,
             conversation_id: conversationId,
             user: 'website-visitor',
+            stream: true,
           }),
         });
-        if (!response.ok) throw new Error('API request failed');
-        data = await response.json();
       } else {
-        const response = await fetch(DIFY_API_URL, {
+        response = await fetch(DIFY_API_URL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -78,37 +80,69 @@ const DifyChatbot = () => {
           body: JSON.stringify({
             query: userMessage.content,
             inputs: {},
-            response_mode: 'blocking',
+            response_mode: 'streaming',
             user: 'website-visitor',
             conversation_id: conversationId,
           }),
         });
-        if (!response.ok) throw new Error('Dify API error');
-        data = await response.json();
-      }
-      
-      if (data.conversation_id) {
-        setConversationId(data.conversation_id);
       }
 
+      if (!response.ok) throw new Error('API request failed');
+
+      // 处理流式响应
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullContent = '';
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6));
+                
+                if (data.event === 'message' || data.event === 'agent_message') {
+                  fullContent += data.answer || '';
+                  setStreamingContent(fullContent);
+                }
+                
+                if (data.conversation_id) {
+                  setConversationId(data.conversation_id);
+                }
+              } catch (e) {
+                // 忽略解析错误
+              }
+            }
+          }
+        }
+      }
+
+      // 流结束后，保存完整的消息
       const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: tempId,
         role: 'assistant',
-        content: data.answer || '抱歉，我暂时无法回答这个问题。',
+        content: fullContent || '抱歉，我暂时无法回答这个问题。',
         timestamp: new Date(),
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: tempId,
         role: 'assistant',
         content: '抱歉，连接失败了。请稍后再试。',
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, assistantMessage]);
     } finally {
       setIsLoading(false);
+      setStreamingContent('');
     }
   };
 
@@ -163,7 +197,20 @@ const DifyChatbot = () => {
                 </div>
               </div>
             ))}
-            {isLoading && (
+            
+            {/* 流式输出中的消息 */}
+            {streamingContent && (
+              <div className="dify-message assistant">
+                <div className="dify-message-avatar">
+                  <img src="/赞恩.jpg" alt="AI" width="32" height="32" />
+                </div>
+                <div className="dify-message-content">
+                  <p>{streamingContent}<span className="dify-typing-cursor">|</span></p>
+                </div>
+              </div>
+            )}
+            
+            {isLoading && !streamingContent && (
               <div className="dify-message assistant">
                 <div className="dify-message-avatar">
                   <img src="/赞恩.jpg" alt="AI" width="32" height="32" />
