@@ -139,7 +139,7 @@ const DifyChatbot = () => {
         content: '抱歉，连接失败了。请稍后再试。',
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, assistantMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
       setStreamingContent('');
