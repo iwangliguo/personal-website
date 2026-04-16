@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import '../styles/DifyChat.css';
 
 interface Message {
@@ -14,13 +14,16 @@ const DIFY_API_URL = 'http://150.158.57.162:8081/v1/chat-messages';
 // 根据环境自动选择调用方式
 const isProduction = import.meta.env.PROD;
 
+// 打字机速度：75ms/字符
+const TYPING_SPEED = 75;
+
 const DifyChatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       role: 'assistant',
-      content: '你好！我是 hins 的 AI 助手，有什么我可以帮你的吗？',
+      content: '非彼无我，非我无所取。',
       timestamp: new Date(),
     },
   ]);
@@ -29,6 +32,9 @@ const DifyChatbot = () => {
   const [conversationId, setConversationId] = useState('');
   const [streamingContent, setStreamingContent] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  // 用于取消打字机效果的 ref
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const abortTypingRef = useRef(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -37,6 +43,46 @@ const DifyChatbot = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, streamingContent]);
+
+  // 清理打字机定时器
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // 打字机效果：逐字显示内容
+  const typeText = useCallback((fullText: string, onComplete: (text: string) => void) => {
+    abortTypingRef.current = false;
+    let index = 0;
+    let currentText = '';
+
+    const typeNextChar = () => {
+      if (abortTypingRef.current) return;
+
+      if (index < fullText.length) {
+        currentText += fullText[index];
+        setStreamingContent(currentText);
+        index++;
+        typingTimeoutRef.current = setTimeout(typeNextChar, TYPING_SPEED);
+      } else {
+        onComplete(currentText);
+      }
+    };
+
+    typeNextChar();
+  }, []);
+
+  // 取消打字机效果
+  const cancelTyping = useCallback(() => {
+    abortTypingRef.current = true;
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
+  }, []);
 
   const handleSend = async () => {
     if (!inputValue.trim() || isLoading) return;
@@ -79,7 +125,7 @@ const DifyChatbot = () => {
           body: JSON.stringify({
             query: userMessage.content,
             inputs: {},
-            response_mode: 'blocking',
+            response_mode: 'streaming',
             user: 'website-visitor',
             conversation_id: conversationId,
           }),
@@ -88,33 +134,92 @@ const DifyChatbot = () => {
 
       if (!response.ok) throw new Error('API request failed');
 
-      // 处理 blocking 响应
-      const data = await response.json();
-      
-      // 保存 conversation_id 用于后续对话
-      if (data.conversation_id) {
-        setConversationId(data.conversation_id);
+      // 检查是否是流式响应
+      const contentType = response.headers.get('content-type') || '';
+      let answerText = '';
+
+      if (contentType.includes('text/event-stream') || response.body) {
+        // 流式响应处理
+        const reader = response.body?.getReader();
+        if (!reader) throw new Error('No reader available');
+
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          
+          // 解析 SSE 格式数据
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
+              if (data === '[DONE]') continue;
+              
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.answer) {
+                  answerText += parsed.answer;
+                }
+                if (parsed.conversation_id) {
+                  setConversationId(parsed.conversation_id);
+                }
+              } catch (e) {
+                // 忽略解析错误
+              }
+            }
+          }
+        }
+      } else {
+        // blocking 响应处理（兼容）
+        const data = await response.json();
+        if (data.conversation_id) {
+          setConversationId(data.conversation_id);
+        }
+        answerText = data.answer || '';
       }
 
-      const assistantMessage: Message = {
-        id: tempId,
-        role: 'assistant',
-        content: data.answer || '抱歉，我暂时无法回答这个问题。',
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
+      // 打字机效果显示
+      if (answerText) {
+        setIsLoading(false);
+        typeText(answerText, (finalText) => {
+          const assistantMessage: Message = {
+            id: tempId,
+            role: 'assistant',
+            content: finalText,
+            timestamp: new Date(),
+          };
+          setStreamingContent('');
+          setMessages((prev) => [...prev, assistantMessage]);
+        });
+      } else {
+        // 无内容时的处理
+        const assistantMessage: Message = {
+          id: tempId,
+          role: 'assistant',
+          content: '抱歉，我暂时无法回答这个问题。',
+          timestamp: new Date(),
+        };
+        setStreamingContent('');
+        setMessages((prev) => [...prev, assistantMessage]);
+      }
     } catch (error) {
+      cancelTyping();
       const errorMessage: Message = {
         id: tempId,
         role: 'assistant',
         content: '抱歉，连接失败了。请稍后再试。',
         timestamp: new Date(),
       };
+      setStreamingContent('');
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
-      setStreamingContent('');
     }
   };
 
