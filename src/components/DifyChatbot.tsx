@@ -134,11 +134,11 @@ const DifyChatbot = () => {
 
       if (!response.ok) throw new Error('API request failed');
 
-      // 检查是否是流式响应
+      // 检查是否是流式响应（通过 content-type 判断）
       const contentType = response.headers.get('content-type') || '';
       let answerText = '';
 
-      if (contentType.includes('text/event-stream') || response.body) {
+      if (contentType.includes('text/event-stream')) {
         // 流式响应处理
         const reader = response.body?.getReader();
         if (!reader) throw new Error('No reader available');

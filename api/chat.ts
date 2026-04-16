@@ -18,7 +18,7 @@ export default async function handler(
       return response.status(400).json({ error: 'Query is required' });
     }
 
-    // 使用 blocking 响应模式，更稳定
+    // 使用 streaming 响应模式，支持打字机效果
     const res = await fetch(DIFY_API_URL, {
       method: 'POST',
       headers: {
@@ -28,22 +28,54 @@ export default async function handler(
       body: JSON.stringify({
         query,
         inputs: {},
-        response_mode: 'blocking',
+        response_mode: 'streaming',
         user: user || 'website-user',
         conversation_id: conversation_id || '',
       }),
     });
 
-    const data = await res.json();
-    
     if (!res.ok) {
-      console.error('Dify API error:', data);
-      return response.status(res.status).json({ error: 'Dify API error', details: data });
+      const errorData = await res.json().catch(() => ({}));
+      console.error('Dify API error:', errorData);
+      return response.status(res.status).json({ error: 'Dify API error', details: errorData });
     }
 
-    return response.status(200).json(data);
+    // 设置 SSE 流式响应头
+    response.setHeader('Content-Type', 'text/event-stream');
+    response.setHeader('Cache-Control', 'no-cache');
+    response.setHeader('Connection', 'keep-alive');
+    response.setHeader('Transfer-Encoding', 'chunked');
+
+    // 获取流式 reader
+    const reader = res.body?.getReader();
+    if (!reader) {
+      return response.status(500).json({ error: 'Failed to get response reader' });
+    }
+
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    // 读取并转发流
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        if (line.trim()) {
+          response.write(`data: ${line}\n\n`);
+        }
+      }
+    }
+
+    // 发送结束信号
+    response.write('data: [DONE]\n\n');
+    response.end();
   } catch (error) {
     console.error('Proxy error:', error);
-    return response.status(500).json({ error: 'Internal server error' });
+    response.status(500).json({ error: 'Internal server error' });
   }
 }
