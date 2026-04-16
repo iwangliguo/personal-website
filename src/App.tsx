@@ -30,7 +30,7 @@ function App() {
           </Routes>
         </main>
         <footer className="footer">
-          <p>&copy; {new Date().getFullYear()} hins wang. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} hins wang. All rights reserved. 苏ICP备2026019385号</p>
         </footer>
       </div>
     </Router>
