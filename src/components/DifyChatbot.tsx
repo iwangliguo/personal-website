@@ -40,9 +40,10 @@ const DifyChatbot = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // 滚动到底部：新消息添加时立即滚动，打字效果期间不滚动
   useEffect(() => {
     scrollToBottom();
-  }, [messages, streamingContent]);
+  }, [messages]);
 
   // 清理打字机定时器
   useEffect(() => {
@@ -223,6 +224,30 @@ const DifyChatbot = () => {
     }
   };
 
+  // 聊天窗口打开时禁止背景滚动
+  const chatMessagesRef = useRef<HTMLDivElement>(null);
+
+  // 完全禁止聊天窗口的滚动事件冒泡到背景页面
+  const handleWheel = useCallback((e: WheelEvent) => {
+    e.stopPropagation();
+  }, []);
+
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    e.stopPropagation();
+  }, []);
+
+  useEffect(() => {
+    const chatEl = chatMessagesRef.current;
+    if (!chatEl) return;
+
+    chatEl.addEventListener('wheel', handleWheel, { passive: true });
+    chatEl.addEventListener('touchmove', handleTouchMove, { passive: true });
+    return () => {
+      chatEl.removeEventListener('wheel', handleWheel);
+      chatEl.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [handleWheel, handleTouchMove]);
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -255,7 +280,7 @@ const DifyChatbot = () => {
             </div>
           </div>
 
-          <div className="dify-chat-messages">
+          <div className="dify-chat-messages" ref={chatMessagesRef}>
             {messages.map((msg) => (
               <div
                 key={msg.id}
