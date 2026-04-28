@@ -1319,7 +1319,20 @@ body {
 /* ── 搜索框 ── */
 .search-bar {
   position: relative;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.search-input-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
 }
 
 .search-input {
@@ -1364,36 +1377,65 @@ body {
   color: var(--text-primary);
 }
 
+/* ── 日期筛选（集成在搜索框内） ── */
+.date-filter-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  font-size: 0.875rem;
+}
+
+.date-filter-inline:focus-within {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.12);
+}
+
+.date-filter-icon {
+  color: var(--text-light);
+}
+
+.date-input {
+  padding: 0.25rem 0.375rem;
+  font-size: 0.8125rem;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 110px;
+}
+
+.date-input:focus {
+  background: white;
+  border-radius: 4px;
+}
+
+.date-separator {
+  color: var(--text-light);
+}
+
+.date-filter-clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-light);
+  font-size: 0.75rem;
+  padding: 0.125rem;
+  transition: color 0.15s;
+}
+
+.date-filter-clear:hover {
+  color: var(--text-primary);
+}
+
 .search-result-count {
   font-size: 0.875rem;
   color: var(--text-light);
   margin-bottom: 1.25rem;
-}
-
-/* ── 日期筛选 ── */
-.date-filter-bar {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-  padding: 0.75rem 1rem;
-  background: var(--bg-secondary);
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-}
-
-.date-filter-label {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-
-.date-filter-inputs {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
 }
 
 .date-input {

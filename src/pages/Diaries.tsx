@@ -29,42 +29,42 @@ const Diaries = () => {
 
       <main>
         <div className="search-bar">
-          <input
-            type="text"
-            className="search-input"
-            placeholder="搜索标题、内容或标签…"
-            value={query}
-            onChange={e => { setQuery(e.target.value); goToPage(1); }}
-          />
-          {query && (
-            <button className="search-clear" onClick={() => { setQuery(''); goToPage(1); }} aria-label="清除">✕</button>
-          )}
-        </div>
+          <div className="search-wrapper">
+            <div className="search-input-wrapper">
+              <input
+                type="text"
+                className="search-input"
+                placeholder="搜索标题、内容或标签…"
+                value={query}
+                onChange={e => { setQuery(e.target.value); goToPage(1); }}
+              />
+              {query && (
+                <button className="search-clear" onClick={() => { setQuery(''); goToPage(1); }} aria-label="清除">✕</button>
+              )}
+            </div>
 
-        <div className="date-filter-bar">
-          <span className="date-filter-label">按日期筛选：</span>
-          <div className="date-filter-inputs">
-            <input
-              type="date"
-              className="date-input"
-              value={startDate}
-              onChange={e => { setStartDate(e.target.value); goToPage(1); }}
-              max={endDate || undefined}
-            />
-            <span className="date-separator">至</span>
-            <input
-              type="date"
-              className="date-input"
-              value={endDate}
-              onChange={e => { setEndDate(e.target.value); goToPage(1); }}
-              min={startDate || undefined}
-            />
+            <div className="date-filter-inline">
+              <span className="date-filter-icon">📅</span>
+              <input
+                type="date"
+                className="date-input"
+                value={startDate}
+                onChange={e => { setStartDate(e.target.value); goToPage(1); }}
+                max={endDate || undefined}
+              />
+              <span className="date-separator">至</span>
+              <input
+                type="date"
+                className="date-input"
+                value={endDate}
+                onChange={e => { setEndDate(e.target.value); goToPage(1); }}
+                min={startDate || undefined}
+              />
+              {hasDateFilter && (
+                <button className="date-filter-clear" onClick={() => { clearDates(); goToPage(1); }} aria-label="清除日期">✕</button>
+              )}
+            </div>
           </div>
-          {hasDateFilter && (
-            <button className="date-filter-clear" onClick={() => { clearDates(); goToPage(1); }}>
-              清除日期
-            </button>
-          )}
         </div>
 
         {dateFiltered.length === 0 ? (
