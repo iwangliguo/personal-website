@@ -3,6 +3,7 @@ import { getPublicDiaries } from '../data/diaries';
 import Pagination from '../components/Pagination';
 import { usePagination } from '../hooks/usePagination';
 import { useSearch } from '../hooks/useSearch';
+import { useDateFilter } from '../hooks/useDateFilter';
 import '../styles/Academic.css';
 
 // 格式化日期：只显示到日期（YYYY-MM-DD）
@@ -13,8 +14,9 @@ const formatDate = (dateStr: string) => {
 const Diaries = () => {
   const publicDiaries = getPublicDiaries();
   const { query, setQuery, filtered } = useSearch(publicDiaries, ['title', 'content', 'tags']);
+  const { startDate, setStartDate, endDate, setEndDate, filtered: dateFiltered, clearDates, hasDateFilter } = useDateFilter({ items: filtered });
   const { currentPage, totalPages, currentItems, goToPage } = usePagination({
-    items: filtered,
+    items: dateFiltered,
     itemsPerPage: 6,
   });
 
@@ -39,14 +41,40 @@ const Diaries = () => {
           )}
         </div>
 
-        {filtered.length === 0 ? (
+        <div className="date-filter-bar">
+          <span className="date-filter-label">按日期筛选：</span>
+          <div className="date-filter-inputs">
+            <input
+              type="date"
+              className="date-input"
+              value={startDate}
+              onChange={e => { setStartDate(e.target.value); goToPage(1); }}
+              max={endDate || undefined}
+            />
+            <span className="date-separator">至</span>
+            <input
+              type="date"
+              className="date-input"
+              value={endDate}
+              onChange={e => { setEndDate(e.target.value); goToPage(1); }}
+              min={startDate || undefined}
+            />
+          </div>
+          {hasDateFilter && (
+            <button className="date-filter-clear" onClick={() => { clearDates(); goToPage(1); }}>
+              清除日期
+            </button>
+          )}
+        </div>
+
+        {dateFiltered.length === 0 ? (
           <div className="empty-state">
-            <p className="empty-text">{query ? `未找到与「${query}」相关的日记` : '暂无公开的日记'}</p>
+            <p className="empty-text">{query || hasDateFilter ? `未找到符合条件的日记` : '暂无公开的日记'}</p>
           </div>
         ) : (
           <>
-            {query && (
-              <p className="search-result-count">找到 {filtered.length} 篇日记</p>
+            {(query || hasDateFilter) && (
+              <p className="search-result-count">找到 {dateFiltered.length} 篇日记</p>
             )}
             <div className="diaries-grid">
               {currentItems.map((diary) => (
