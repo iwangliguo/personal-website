@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { DiaryEntry } from '../data/diaries';
+import type { DiaryEntry } from '../data/diaries';
 
 interface UseDateFilterOptions {
   items: DiaryEntry[];
